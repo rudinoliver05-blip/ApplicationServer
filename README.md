@@ -1,96 +1,53 @@
 # JTCP
 
-JTCP is a custom application server built from scratch in Java to explore
-networking, protocol design, server architecture, concurrency, and
-high-performance systems.
+JTCP is a custom TCP-based application server built from scratch in Java.
 
-Rather than relying on HTTP or an existing web framework, JTCP implements
-its own application-level protocol on top of TCP.
+The project is designed to explore the internal architecture of application
+servers and gain hands-on experience with networking, protocol design,
+concurrency, state management, resilience, and performance engineering.
 
-## Current Architecture
+Instead of relying on HTTP or an existing server framework, JTCP implements
+its own application-level protocol directly on top of TCP.
 
-Client
-   │
-   │ Custom TCP Protocol
-   ▼
-Server
-   │
-   ▼
-Request Parser
-   │
-   ▼
-Protocol Validation
-   │
-   ▼
-Command Dispatcher
-   │
-   ├── SignupHandler
-   ├── LoginHandler
-   ├── LogoutHandler
-   ├── WhoAmIHandler
-   └── ...
-   │
-   ▼
-In-Memory Storage / Session Store
+---
 
-## Current Features
+## Architecture
 
-- Custom TCP client/server communication
-- Custom application-level protocol
-- Protocol versioning
-- Request parsing and validation
-- Command-based request dispatching
-- Separate command handlers
-- In-memory user storage
-- User signup and login
-- Session creation using UUIDs
-- Session-based logout
-- Session storage and removal
-- Protocol and application-level error handling
-
-## Goals
-
-JTCP is being developed incrementally rather than as a framework-driven
-application. The goal is to understand what happens inside an application
-server and eventually build a system capable of handling significant
-concurrency and load.
-
-Planned areas of development include:
-
-- Concurrent client handling
-- Thread-per-connection implementation
-- Thread-pool based execution
-- Request queues
-- Java NIO
-- Event-driven I/O
-- Backpressure
-- Connection limits
-- Request timeouts
-- Graceful shutdown
-- Load shedding
-- Rate limiting
-- Metrics and observability
-- Performance benchmarking
-- High-concurrency load testing
-
-The project will evolve through these stages:
-
-Correctness → Concurrency → Resilience → Measurement → Performance
-
-## Why This Project?
-
-JTCP is primarily a systems-learning project. It is intended to provide
-hands-on experience with the problems that exist underneath higher-level
-application frameworks:
-
-- How network connections are managed
-- How protocols are designed and parsed
-- How requests are dispatched
-- How state is maintained
-- How concurrent requests are handled
-- How servers behave under load
-- How architectural decisions affect performance
-
-The long-term goal is to turn JTCP into a small, high-performance
-application server while using benchmarks and experiments to evaluate
-different architectural approaches.
+```text
+                         Client
+                           │
+                           │ TCP
+                           ▼
+                    ┌──────────────┐
+                    │    Server    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │  Request Parser │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │Protocol Validator│
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │Command Dispatcher│
+                  └────────┬────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          ▼                ▼                ▼
+     LoginHandler     SignupHandler     GetHandler
+          │                │                │
+          └────────────────┼────────────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   Storage Layer     │
+                │                     │
+                │ UserStore           │
+                │ DataStore           │
+                │ SessionStore        │
+                └─────────────────────┘
