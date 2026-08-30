@@ -1,6 +1,5 @@
-package com.example.jtcp.storage;
+package com.example.jtcp.userdetails;
 
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 

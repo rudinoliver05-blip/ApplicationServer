@@ -39,8 +39,10 @@ public class Client {
                if (input.startsWith("LOGIN")) {
                    sessionId = response;
                }
-
                System.out.println("Server: " + response);
+              if(response.equals("Goodbye")){
+                  break;
+              }
            }
        }
     }

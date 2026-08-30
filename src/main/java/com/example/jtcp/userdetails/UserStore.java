@@ -1,4 +1,4 @@
-package com.example.jtcp.storage;
+package com.example.jtcp.userdetails;
 
 public interface UserStore {
     boolean exists(String username);
