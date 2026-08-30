@@ -4,8 +4,8 @@ import com.example.jtcp.command.CommandHandler;
 import com.example.jtcp.protocol.Request;
 import com.example.jtcp.protocol.Response;
 import com.example.jtcp.protocol.Status;
-import com.example.jtcp.storage.User;
-import com.example.jtcp.storage.UserStore;
+import com.example.jtcp.userdetails.User;
+import com.example.jtcp.userdetails.UserStore;
 
 public class SignupHandler implements CommandHandler {
 

@@ -6,10 +6,9 @@ import com.example.jtcp.protocol.Response;
 import com.example.jtcp.protocol.Status;
 import com.example.jtcp.session.Session;
 import com.example.jtcp.session.SessionStore;
-import com.example.jtcp.storage.User;
-import com.example.jtcp.storage.UserStore;
+import com.example.jtcp.userdetails.User;
+import com.example.jtcp.userdetails.UserStore;
 
-import java.awt.*;
 import java.util.UUID;
 
 public class LoginHandler implements CommandHandler {

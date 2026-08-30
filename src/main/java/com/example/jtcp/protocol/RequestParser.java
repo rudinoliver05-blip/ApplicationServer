@@ -18,34 +18,37 @@ public class RequestParser {
         }
 
         ProtocolValidator validator = new ProtocolValidator();
-
         validator.checkVersion(requestParts[0]);
-
         Command command = validator.checkCommand(requestParts[1]);
 
         String sessionId = null;
         int argumentStart = 2;
-
         if (command != Command.LOGIN && command != Command.SIGNUP) {
-
             if (requestParts.length < 3) {
                 throw new ProtocolException(ProtocolMessage.MISSING_SESSION);
             }
+            sessionId = requestParts[requestParts.length - 1];
+            List<String> arguments = Arrays.asList(requestParts)
+                    .subList(argumentStart, requestParts.length - 1);
 
-            sessionId = requestParts[2];
-            argumentStart = 3;
+            validator.checkArguments(command, arguments);
+
+            return new Request(
+                    requestParts[0],
+                    command,
+                    sessionId,
+                    arguments
+            );
         }
-
-        List<String> arguments =
-                Arrays.asList(requestParts)
-                        .subList(argumentStart, requestParts.length);
+        List<String> arguments = Arrays.asList(requestParts)
+                .subList(argumentStart, requestParts.length);
 
         validator.checkArguments(command, arguments);
 
         return new Request(
                 requestParts[0],
                 command,
-                sessionId,
+                null,
                 arguments
         );
     }

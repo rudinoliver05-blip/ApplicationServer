@@ -1,6 +1,6 @@
 package com.example.jtcp.session;
 
-import com.example.jtcp.storage.User;
+import com.example.jtcp.userdetails.User;
 
 public class Session {
 
