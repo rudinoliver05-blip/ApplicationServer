@@ -21,17 +21,17 @@ public class SignupHandler implements CommandHandler {
         String username = request.getArguments().get(0);
         String password = request.getArguments().get(1);
 
-        if (userStore.exists(username)) {
+        User user = new User(username, password);
+
+        boolean created = userStore.createIfAbsent(user);
+
+        if (!created) {
             return new Response(
                     request.getVersion(),
                     Status.CONFLICT,
                     "User already exists"
             );
         }
-
-        User user = new User(username, password);
-        System.out.println("Signup store: " + userStore);
-        userStore.save(user);
 
         return new Response(
                 request.getVersion(),

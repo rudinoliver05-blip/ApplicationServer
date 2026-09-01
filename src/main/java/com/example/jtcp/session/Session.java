@@ -2,7 +2,7 @@ package com.example.jtcp.session;
 
 import com.example.jtcp.userdetails.User;
 
-public class Session {
+public final class Session {
 
     private final String sessionId;
     private final User user;

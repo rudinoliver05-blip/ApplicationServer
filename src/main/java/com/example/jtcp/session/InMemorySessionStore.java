@@ -3,10 +3,11 @@ package com.example.jtcp.session;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemorySessionStore implements SessionStore {
 
-    private final Map<String, Session> sessions = new HashMap<>();
+    private final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
     @Override
     public void save(Session session) {

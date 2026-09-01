@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.concurrent.*;
+
 public class Client {
     public static final int PORT=8010;
     private String sessionId;
@@ -19,6 +21,14 @@ public class Client {
        try(Socket clientSocket=new Socket(address,PORT); PrintWriter toServer=new PrintWriter(clientSocket.getOutputStream(),true);
            BufferedReader fromServer=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
            Scanner scanner = new Scanner(System.in)){
+           String handshake = fromServer.readLine();
+           if (handshake == null) {
+               return;
+           }
+           System.out.println("Server: " + handshake);
+           if (handshake.contains("BUSY")) {
+               return;
+           }
            while (true) {
                System.out.print("> ");
 

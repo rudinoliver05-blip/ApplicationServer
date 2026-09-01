@@ -29,7 +29,6 @@ public class LoginHandler implements CommandHandler {
         System.out.println(username+" "+password);
         System.out.println("Login store: " + userStore);
         User user = userStore.find(username);
-        System.out.println(user.getUsername()+" "+user.getPassword());
         if (user == null || !user.getPassword().equals(password)) {
             return new Response(
                     request.getVersion(),
