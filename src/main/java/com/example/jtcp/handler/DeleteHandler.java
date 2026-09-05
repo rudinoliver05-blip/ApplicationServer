@@ -6,42 +6,50 @@ import com.example.jtcp.protocol.Request;
 import com.example.jtcp.protocol.Response;
 import com.example.jtcp.protocol.Status;
 import com.example.jtcp.session.Session;
-import com.example.jtcp.session.SessionStore;
-
-import java.util.List;
+import com.example.jtcp.session.SessionException;
+import com.example.jtcp.session.SessionService;
 
 public class DeleteHandler implements CommandHandler {
-    private SessionStore sessionStore;
-    private DataStore dataStore;
-    public DeleteHandler(SessionStore sessionStore, DataStore dataStore){
-        this.sessionStore=sessionStore;
-        this.dataStore=dataStore;
+
+    private final SessionService sessionService;
+    private final DataStore dataStore;
+
+    public DeleteHandler(SessionService sessionService, DataStore dataStore) {
+        this.sessionService = sessionService;
+        this.dataStore = dataStore;
     }
+
     @Override
     public Response handle(Request request) {
-       String sessionId=request.getSessionId();
-        Session session = sessionStore.find(sessionId);
-        if (session == null) {
+
+        try {
+            Session session = sessionService.validate(request.getSessionId());
+
+            String username = session.getUser().getUsername();
+            String key = request.getArguments().get(0);
+
+            boolean deleted = dataStore.delete(username, key);
+
+            if (!deleted) {
+                return new Response(
+                        request.getVersion(),
+                        Status.NOT_FOUND,
+                        "Key not found"
+                );
+            }
+
+            return new Response(
+                    request.getVersion(),
+                    Status.OK,
+                    "Key deleted"
+            );
+
+        } catch (SessionException e) {
             return new Response(
                     request.getVersion(),
                     Status.UNAUTHORIZED,
-                    "Invalid session"
+                    e.getMessage()
             );
         }
-
-        List<String> argument=request.getArguments();
-       Boolean deleted=dataStore.delete(session.getUser().getUsername(),argument.get(0));
-        if(!deleted){
-            return new Response(
-                    request.getVersion(),
-                    Status.NOT_FOUND,
-                    "Resource Not Found"
-            );
-        }
-        return new Response(
-                request.getVersion(),
-                Status.OK,
-                "Deletion successful"
-        );
     }
 }

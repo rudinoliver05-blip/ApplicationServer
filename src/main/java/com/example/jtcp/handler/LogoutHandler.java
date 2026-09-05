@@ -4,28 +4,21 @@ import com.example.jtcp.command.CommandHandler;
 import com.example.jtcp.protocol.Request;
 import com.example.jtcp.protocol.Response;
 import com.example.jtcp.protocol.Status;
-import com.example.jtcp.session.Session;
-import com.example.jtcp.session.SessionStore;
+import com.example.jtcp.session.SessionService;
 
 public class LogoutHandler implements CommandHandler {
 
-    private final SessionStore sessionStore;
+    private final SessionService sessionService;
 
-    public LogoutHandler(SessionStore sessionStore) {
-        this.sessionStore = sessionStore;
+    public LogoutHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
+
     @Override
     public Response handle(Request request) {
-        String sessionId = request.getSessionId();
-        Session session = sessionStore.find(sessionId);
-        if (session == null) {
-            return new Response(
-                    request.getVersion(),
-                    Status.UNAUTHORIZED,
-                    "Invalid session"
-            );
-        }
-        sessionStore.remove(sessionId);
+
+        sessionService.logout(request.getSessionId());
+
         return new Response(
                 request.getVersion(),
                 Status.OK,

@@ -1,4 +1,4 @@
-package com.example.jtcp;
+package com.example.jtcp.tests;
 
 import com.example.jtcp.userdetails.InMemoryUserStore;
 import com.example.jtcp.userdetails.User;

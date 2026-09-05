@@ -6,41 +6,50 @@ import com.example.jtcp.protocol.Request;
 import com.example.jtcp.protocol.Response;
 import com.example.jtcp.protocol.Status;
 import com.example.jtcp.session.Session;
-import com.example.jtcp.session.SessionStore;
-
-import java.util.List;
+import com.example.jtcp.session.SessionException;
+import com.example.jtcp.session.SessionService;
 
 public class GetHandler implements CommandHandler {
-    private final SessionStore sessionStore;
+
+    private final SessionService sessionService;
     private final DataStore dataStore;
 
-    public GetHandler(SessionStore sessionStore, DataStore dataStore) {
-
-        this.sessionStore = sessionStore;
+    public GetHandler(SessionService sessionService, DataStore dataStore) {
+        this.sessionService = sessionService;
         this.dataStore = dataStore;
     }
+
     @Override
     public Response handle(Request request) {
-        String sessionId = request.getSessionId();
-        Session session = sessionStore.find(sessionId);
-        if (session == null) {
+
+        try {
+            Session session = sessionService.validate(request.getSessionId());
+
+            String username = session.getUser().getUsername();
+            String key = request.getArguments().get(0);
+
+            String value = dataStore.get(username, key);
+
+            if (value == null) {
+                return new Response(
+                        request.getVersion(),
+                        Status.NOT_FOUND,
+                        "Key not found"
+                );
+            }
+
+            return new Response(
+                    request.getVersion(),
+                    Status.OK,
+                    value
+            );
+
+        } catch (SessionException e) {
             return new Response(
                     request.getVersion(),
                     Status.UNAUTHORIZED,
-                    "Invalid session"
+                    e.getMessage()
             );
         }
-
-        List<String> argument=request.getArguments();
-        String found=dataStore.get(session.getUser().getUsername(),argument.get(0));
-        if(found == null ||found.isEmpty()){
-            return new Response(
-                    request.getVersion(),
-                    Status.NOT_FOUND,
-                    "Resource Not Found"
-            );
-        }
-      return new Response(request.getVersion(),Status.OK,found);
-
     }
 }
