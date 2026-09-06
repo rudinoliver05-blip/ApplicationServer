@@ -17,7 +17,11 @@ public final class ProtocolMessage {
             "Unknown command";
     public static final String MISSING_SESSION =
             "No session was found";
+    public static final String EMPTY_RESPONSE =
+            "Response cannot be empty";
 
+    public static final String INVALID_RESPONSE =
+            "Invalid server response";
 
     private ProtocolMessage() {
     }

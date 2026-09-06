@@ -58,12 +58,7 @@ class TcpServerIntegrationTest {
                         new Socket("localhost", Server.PORT);
 
                 BufferedReader fromServer =
-                        new BufferedReader(
-                                new InputStreamReader(
-                                        socket.getInputStream()
-                                )
-                        )
-        ) {
+                        new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
             String response = fromServer.readLine();
 

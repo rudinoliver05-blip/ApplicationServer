@@ -55,22 +55,27 @@ public class Server {
         );
     }
 
-
     public void stop() {
+
         if (!running) {
             return;
         }
 
         System.out.println("System is shutting down");
+
         running = false;
+
         if (serverSocket != null && !serverSocket.isClosed()) {
+
             try {
+
                 serverSocket.close();
+
             } catch (IOException e) {
+
                 e.printStackTrace();
             }
         }
-
 
         closeActiveConnections();
 
@@ -90,14 +95,13 @@ public class Server {
 
         } catch (InterruptedException e) {
 
-
             executor.shutdownNow();
+
             Thread.currentThread().interrupt();
         }
 
         System.out.println("JTCP shutdown complete");
     }
-
 
     private void closeActiveConnections() {
 
@@ -124,7 +128,6 @@ public class Server {
             }
         }
     }
-
 
     public void handleClient(
             Socket acceptedConnection,
@@ -156,13 +159,12 @@ public class Server {
                             + acceptedConnection.getInetAddress()
             );
 
-
             toClient.println("JTCP/1.0 READY");
 
             while (true) {
 
-                String clientMessage = fromClient.readLine();
-
+                String clientMessage =
+                        fromClient.readLine();
 
                 if (clientMessage == null) {
                     break;
@@ -176,19 +178,64 @@ public class Server {
                     Response response =
                             dispatcher.dispatch(request);
 
+                    ResponseSerializer serializer =
+                            new ResponseSerializer();
+
+                    String serializedResponse =
+                            serializer.serialize(response);
+
                     System.out.println(
                             "Sending response: ["
-                                    + response.getMessage()
+                                    + serializedResponse
                                     + "]"
                     );
 
-
-                    toClient.println(response.getMessage());
+                    toClient.println(serializedResponse);
 
                 } catch (ProtocolException ex) {
 
+                    Response errorResponse =
+                            new Response(
+                                    Protocol.getVersion(),
+                                    Status.BAD_REQUEST,
+                                    ex.getMessage()
+                            );
 
-                    toClient.println(ex.getMessage());
+                    ResponseSerializer serializer =
+                            new ResponseSerializer();
+
+                    String serializedResponse =
+                            serializer.serialize(errorResponse);
+
+                    System.out.println(
+                            "Sending protocol error: ["
+                                    + serializedResponse
+                                    + "]"
+                    );
+
+                    toClient.println(serializedResponse);
+
+                } catch (RuntimeException ex) {
+
+                    System.err.println(
+                            "Unexpected error while processing request: "
+                                    + ex.getMessage()
+                    );
+
+                    Response errorResponse =
+                            new Response(
+                                    Protocol.getVersion(),
+                                    Status.INTERNAL_ERROR,
+                                    "Internal server error"
+                            );
+
+                    ResponseSerializer serializer =
+                            new ResponseSerializer();
+
+                    String serializedResponse =
+                            serializer.serialize(errorResponse);
+
+                    toClient.println(serializedResponse);
                 }
 
                 System.out.println(
@@ -200,24 +247,24 @@ public class Server {
 
         } finally {
 
-
             activeConnections.remove(acceptedConnection);
         }
     }
-
 
     public void start() throws IOException {
 
         System.out.println("JTCP Server starting...");
 
-        try (ServerSocket socket = new ServerSocket(PORT)) {
+        try (ServerSocket socket =
+                     new ServerSocket(PORT)) {
 
             this.serverSocket = socket;
 
             // Register JVM shutdown handling
             registerShutDown();
 
-            RequestParser parser = new RequestParser();
+            RequestParser parser =
+                    new RequestParser();
 
             CommandDispatcher dispatcher =
                     new CommandDispatcher();
@@ -225,7 +272,6 @@ public class Server {
             while (running) {
 
                 try {
-
 
                     Socket acceptedConnection =
                             serverSocket.accept();
@@ -244,7 +290,6 @@ public class Server {
 
                             } catch (IOException e) {
 
-
                                 if (running) {
                                     e.printStackTrace();
                                 }
@@ -253,7 +298,9 @@ public class Server {
 
                     } catch (RejectedExecutionException e) {
 
-                        System.out.println("REJECTED CLIENT");
+                        System.out.println(
+                                "REJECTED CLIENT"
+                        );
 
                         try {
 
@@ -273,7 +320,6 @@ public class Server {
 
                         } catch (IOException ex) {
 
-
                             if (running) {
                                 throw e;
                             }
@@ -285,7 +331,6 @@ public class Server {
                     }
 
                 } catch (IOException e) {
-
 
                     if (running) {
                         throw e;
@@ -308,6 +353,7 @@ public class Server {
             server.start();
 
         } catch (Exception e) {
+
             if (server.running) {
                 e.printStackTrace();
             }

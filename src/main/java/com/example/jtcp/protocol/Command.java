@@ -2,27 +2,33 @@ package com.example.jtcp.protocol;
 
 public enum Command {
 
-    HELLO(0),
-    SIGNUP(2),
-    LOGIN(2),
-    LOGOUT(0),
-    WHOAMI(0),
-    HELP(0),
-    PING(0),
-    TIME(0),
-    SET(2),
-    GET(1),
-    DELETE(1),
-    LIST(0),
-    QUIT(0);
+    HELLO(0, false),
+    SIGNUP(2, false),
+    LOGIN(2, false),
+    LOGOUT(0, true),
+    WHOAMI(0, true),
+    HELP(0, false),
+    PING(0, false),
+    TIME(0, false),
+    SET(2, true),
+    GET(1, true),
+    DELETE(1, true),
+    LIST(0, true),
+    QUIT(0, false);
 
     private final int argumentCount;
+    private final boolean authenticationRequired;
 
-    Command(int argumentCount) {
+    Command(int argumentCount, boolean authenticationRequired) {
         this.argumentCount = argumentCount;
+        this.authenticationRequired = authenticationRequired;
     }
 
     public int getArgumentCount() {
         return argumentCount;
+    }
+
+    public boolean isAuthenticationRequired() {
+        return authenticationRequired;
     }
 }

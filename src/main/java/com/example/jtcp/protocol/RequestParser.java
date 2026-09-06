@@ -23,11 +23,14 @@ public class RequestParser {
 
         String sessionId = null;
         int argumentStart = 2;
-        if (command != Command.LOGIN && command != Command.SIGNUP) {
+        if (command.isAuthenticationRequired()) {
+
             if (requestParts.length < 3) {
                 throw new ProtocolException(ProtocolMessage.MISSING_SESSION);
             }
+
             sessionId = requestParts[requestParts.length - 1];
+
             List<String> arguments = Arrays.asList(requestParts)
                     .subList(argumentStart, requestParts.length - 1);
 
